@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Drew's Spotify Playlist Sorter</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+  <style>
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.05);
+      }
+    }
+    
+    @keyframes shimmer {
+      0% {
+        background-position: -200px 0;
+      }
+      100% {
+        background-position: calc(200px + 100%) 0;
+      }
+    }
+    
+    .fade-in-up {
+      animation: fadeInUp 0.6s ease-out forwards;
+    }
+    
+    .pulse-hover:hover {
+      animation: pulse 0.3s ease-in-out;
+    }
+    
+    .shimmer {
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.1),
+        transparent
+      );
+      background-size: 200px 100%;
+      animation: shimmer 2s infinite;
+    }
+    
+    .glass-effect {
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .spotify-gradient {
+      background: linear-gradient(135deg, #1DB954 0%, #1ed760 100%);
+    }
+    
+    .red-gradient {
+      background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+    }
+    
+    .card-hover {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .card-hover:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 25px 50px -12px rgba(220, 38, 38, 0.25);
+    }
+    
+    .track-item {
+      transition: all 0.2s ease;
+      border-left: 4px solid transparent;
+    }
+    
+    .track-item:hover {
+      border-left-color: #dc2626;
+      background: rgba(220, 38, 38, 0.1);
+    }
+    
+    .floating-action {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 50;
+    }
+    
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 4px;
+    }
+    
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, #dc2626, #ef4444);
+      border-radius: 4px;
+    }
+    
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(135deg, #b91c1c, #dc2626);
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-gray-900 via-black to-gray-900 min-h-screen flex flex-col text-red-100">
+  
+  <div class="fixed inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute -top-4 -left-4 w-72 h-72 bg-red-600 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
+    <div class="absolute -bottom-8 -right-4 w-72 h-72 bg-red-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse" style="animation-delay: 2s;"></div>
+    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-red-700 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-pulse" style="animation-delay: 4s;"></div>
+  </div>
+
+  <header class="relative glass-effect text-red-100 p-6 flex justify-between items-center shadow-2xl z-10">
+    <div class="flex items-center space-x-4 fade-in-up">
+      <div class="relative">
+        <img id="profilePic" src="" alt="Profile Picture" class="w-14 h-14 rounded-full border-3 border-red-500 hidden shadow-lg ring-2 ring-red-500/30" />
+        <div class="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-gray-900 hidden" id="onlineIndicator"></div>
+      </div>
+      <div>
+        <h1 class="text-4xl font-bold bg-gradient-to-r from-red-400 via-red-500 to-red-600 bg-clip-text text-transparent">
+          Drew's Spotify Sorter
+        </h1>
+        <p class="text-red-300 text-sm mt-1 opacity-80">Organize your music, your way</p>
+      </div>
+    </div>
+    <button id="login" class="red-gradient hover:shadow-lg hover:shadow-red-500/25 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 pulse-hover">
+      <span class="flex items-center space-x-2">
+        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.42 1.56-.299.421-1.02.599-1.559.3z"/>
+        </svg>
+        <span>Connect Spotify</span>
+      </span>
+    </button>
+  </header>
+
+  <main class="flex-grow container mx-auto p-6 relative z-10">
+    <section id="profile" class="mb-8 glass-effect p-6 rounded-2xl shadow-xl hidden fade-in-up">
+      <div class="flex items-center space-x-6">
+        <div class="relative">
+          <img id="profileImage" src="" alt="Your Profile" class="w-20 h-20 rounded-full border-4 border-red-500 shadow-lg" />
+          <div class="absolute -bottom-2 -right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full font-semibold">
+            Pro
+          </div>
+        </div>
+        <div>
+          <h2 class="text-2xl font-bold text-red-100" id="profileName"></h2>
+          <p class="text-red-300 opacity-80">Music Curator</p>
+          <div class="flex items-center space-x-4 mt-2">
+            <div class="flex items-center space-x-1 text-green-400">
+              <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+              <span class="text-sm">Connected</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mb-8">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-3xl font-bold text-red-100 flex items-center space-x-3">
+          <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path>
+          </svg>
+          <span>Your Playlists</span>
+        </h2>
+        <div class="text-red-300 text-sm opacity-80">
+          Click any playlist to start organizing
+        </div>
+      </div>
+      <div id="playlists" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+    </section>
+
+    <section id="trackSection" class="hidden">
+      <div class="glass-effect p-8 backdrop-blur-sm rounded-2xl shadow-2xl max-w-6xl mx-auto">
+        <div class="flex justify-between items-center mb-6">
+          <div>
+            <h2 id="playlistTitle" class="text-2xl font-bold text-red-100 mb-2"></h2>
+            <p class="text-red-300 opacity-80 text-sm">Drag and drop tracks to reorder • Click 🗑️ to remove</p>
+          </div>
+          <button
+            id="saveOrderBtn"
+            class="spotify-gradient hover:shadow-lg hover:shadow-green-500/25 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 pulse-hover"
+            onclick="saveReorder()"
+          >
+            <span class="flex items-center space-x-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12"></path>
+              </svg>
+              <span>Save Order</span>
+            </span>
+          </button>
+        </div>
+        
+        <div class="relative">
+          <ul id="trackList" class="divide-y divide-red-800/30 max-h-[600px] overflow-y-auto custom-scrollbar rounded-lg"></ul>
+          
+          <div id="emptyState" class="text-center py-12 hidden">
+            <svg class="w-16 h-16 text-red-400 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path>
+            </svg>
+            <p class="text-red-300 text-lg">No tracks to display</p>
+            <p class="text-red-400 text-sm opacity-70">Select a playlist to get started</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="loadingOverlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+    <div class="glass-effect p-8 rounded-2xl text-center">
+      <div class="w-16 h-16 border-4 border-red-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+      <p class="text-red-100 text-lg font-semibold">Loading your music...</p>
+      <p class="text-red-300 text-sm opacity-80 mt-2">This might take a moment</p>
+    </div>
+  </div>
+
+  <script>
+    let accessToken = '';
+    let playlists = [];
+    let currentPlaylistId = '';
+    let currentTracks = [];
+    let sortable;
+    let audio = null;
+    let playingIndex = null;
+    let config = {};
+
+    function showLoading() {
+      document.getElementById('loadingOverlay').classList.remove('hidden');
+    }
+
+    function hideLoading() {
+      document.getElementById('loadingOverlay').classList.add('hidden');
+    }
+
+    window.onload = async function () {
+      try {
+        showLoading();
+        const res = await fetch('/api/config');
+        config = await res.json();
+
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get('code');
+        const error = params.get('error');
+
+        if (error) {
+          hideLoading();
+          return alert(`Spotify auth error: ${error}`);
+        }
+        if (code) {
+          await exchangeCode(code);
+        } else {
+          const token = localStorage.getItem('spotify_access_token');
+          const expiry = localStorage.getItem('token_expiry');
+          if (token && expiry && Date.now() < +expiry) {
+            accessToken = token;
+            updateLoginButton('Connected');
+            await loadProfileAndPlaylists();
+          } else if (token) {
+            const refreshed = await refreshAccessToken();
+            if (refreshed) await loadProfileAndPlaylists();
+          }
+        }
+        hideLoading();
+      } catch (err) {
+        hideLoading();
+        console.error('Initialization error:', err);
+      }
+    };
+
+    function updateLoginButton(status) {
+      const btn = document.getElementById('login');
+      if (status === 'Connected') {
+        btn.innerHTML = `
+          <span class="flex items-center space-x-2">
+            <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+            <span>Connected</span>
+          </span>
+        `;
+        btn.classList.add('spotify-gradient');
+        btn.classList.remove('red-gradient');
+        document.getElementById('onlineIndicator')?.classList.remove('hidden');
+      }
+    }
+
+    document.getElementById('login').onclick = () => {
+      if (!config.spotifyClientId || !config.redirectUri) return alert('Missing Spotify config');
+      const state = [...Array(16)].map(() => Math.random().toString(36)[2]).join('');
+      localStorage.setItem('spotify_auth_state', state);
+      const scope = 'playlist-read-private playlist-modify-public playlist-modify-private user-read-private';
+      const authUrl = `https://accounts.spotify.com/authorize?response_type=code&client_id=${config.spotifyClientId}&scope=${encodeURIComponent(scope)}&redirect_uri=${encodeURIComponent(config.redirectUri)}&state=${state}`;
+      location.href = authUrl;
+    };
+
+    async function exchangeCode(code) {
+      const res = await fetch('/api/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code })
+      });
+      const data = await res.json();
+      accessToken = data.access_token;
+      localStorage.setItem('spotify_access_token', accessToken);
+      localStorage.setItem('token_expiry', Date.now() + data.expires_in * 1000);
+      if (data.refresh_token) localStorage.setItem('spotify_refresh_token', data.refresh_token);
+      history.replaceState({}, '', '/');
+      updateLoginButton('Connected');
+      await loadProfileAndPlaylists();
+    }
+
+    async function refreshAccessToken() {
+      const refreshToken = localStorage.getItem('spotify_refresh_token');
+      const res = await fetch('/api/refresh', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refreshToken })
+      });
+      const data = await res.json();
+      if (data.access_token) {
+        accessToken = data.access_token;
+        localStorage.setItem('spotify_access_token', accessToken);
+        localStorage.setItem('token_expiry', Date.now() + data.expires_in * 1000);
+        return true;
+      }
+      return false;
+    }
+
+    async function loadProfileAndPlaylists() {
+      try {
+        const res = await fetch('https://api.spotify.com/v1/me', {
+          headers: { Authorization: 'Bearer ' + accessToken }
+        });
+        const user = await res.json();
+        
+        const profileImg = document.getElementById('profileImage');
+        const profileName = document.getElementById('profileName');
+        const smallPic = document.getElementById('profilePic');
+        
+        if (user.images?.[0]?.url) {
+          profileImg.src = user.images[0].url;
+          smallPic.src = user.images[0].url;
+          smallPic.classList.remove('hidden');
+        }
+        
+        profileName.textContent = user.display_name || 'Music Lover';
+        document.getElementById('profile').classList.remove('hidden');
+
+        await fetchPlaylists();
+        renderPlaylists();
+      } catch (error) {
+        console.error('Error loading profile:', error);
+      }
+    }
+
+    async function fetchPlaylists() {
+      playlists = [];
+      let url = 'https://api.spotify.com/v1/me/playlists?limit=50';
+      while (url) {
+        const res = await fetch(url, {
+          headers: { Authorization: 'Bearer ' + accessToken }
+        });
+        const data = await res.json();
+        playlists.push(...data.items);
+        url = data.next;
+      }
+    }
+
+    function renderPlaylists() {
+      const container = document.getElementById('playlists');
+      container.innerHTML = '';
+      playlists.forEach((p, index) => {
+        const card = document.createElement('div');
+        card.className = 'glass-effect p-6 rounded-2xl cursor-pointer text-red-100 shadow-xl card-hover fade-in-up';
+        card.style.animationDelay = `${index * 0.1}s`;
+        
+        const imageUrl = p.images?.[0]?.url;
+        card.innerHTML = `
+          <div class="flex items-center space-x-4 mb-4">
+            <div class="w-16 h-16 rounded-xl overflow-hidden bg-red-800 flex-shrink-0 ${!imageUrl ? 'flex items-center justify-center' : ''}">
+              ${imageUrl ? 
+                `<img src="${imageUrl}" alt="${p.name}" class="w-full h-full object-cover">` :
+                `<svg class="w-8 h-8 text-red-400" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+                </svg>`
+              }
+            </div>
+            <div class="flex-grow min-w-0">
+              <h3 class="font-bold text-lg text-red-100 truncate">${p.name}</h3>
+              <p class="text-red-300 text-sm opacity-80">${p.tracks.total} tracks</p>
+              <p class="text-red-400 text-xs opacity-60 mt-1">by ${p.owner.display_name}</p>
+            </div>
+          </div>
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-red-300 opacity-60">${p.public ? 'Public' : 'Private'}</span>
+            <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+          </div>
+        `;
+        
+        card.onclick = () => loadPlaylistTracks(p.id, p.name);
+        container.appendChild(card);
+      });
+    }
+
+    async function loadPlaylistTracks(id, name) {
+      currentPlaylistId = id;
+      currentTracks = [];
+      showLoading();
+      
+      document.getElementById('playlistTitle').textContent = `${name} (Loading...)`;
+      document.getElementById('trackSection').classList.remove('hidden');
+      document.getElementById('trackList').innerHTML = '';
+      document.getElementById('emptyState').classList.add('hidden');
+
+      try {
+        let url = `https://api.spotify.com/v1/playlists/${id}/tracks`;
+        while (url) {
+          const res = await fetch(url, {
+            headers: { Authorization: 'Bearer ' + accessToken }
+          });
+          const data = await res.json();
+          const valid = data.items.filter(t => t.track).map(t => ({
+            uri: t.track.uri,
+            name: t.track.name,
+            artist: t.track.artists.map(a => a.name).join(', '),
+            preview_url: t.track.preview_url,
+            image: t.track.album?.images?.[2]?.url || null,
+            duration: t.track.duration_ms
+          }));
+          currentTracks.push(...valid);
+          url = data.next;
+        }
+
+        document.getElementById('playlistTitle').textContent = `${name} (${currentTracks.length} tracks)`;
+        await renderTracks();
+        
+        document.getElementById('trackSection').scrollIntoView({ behavior: 'smooth' });
+      } catch (error) {
+        console.error('Error loading tracks:', error);
+        alert('Failed to load playlist tracks');
+      }
+      
+      hideLoading();
+    }
+
+    async function renderTracks() {
+      const list = document.getElementById('trackList');
+      const emptyState = document.getElementById('emptyState');
+      
+      if (currentTracks.length === 0) {
+        list.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+      }
+      
+      emptyState.classList.add('hidden');
+      list.innerHTML = '';
+      
+      for (let i = 0; i < currentTracks.length; i++) {
+        const track = currentTracks[i];
+        
+        let genre = 'Unknown';
+        try {
+          const genreRes = await fetch(`/api/genres?artist=${encodeURIComponent(track.artist)}&track=${encodeURIComponent(track.name)}`);
+          const genreData = await genreRes.json();
+          genre = genreData.tags?.slice(0, 2).join(', ') || 'Unknown';
+        } catch (err) {
+          console.log('Genre fetch failed for:', track.name);
+        }
+
+        const li = document.createElement('li');
+        li.className = 'track-item flex justify-between items-center py-4 px-4 text-red-200 hover:bg-red-900/20 rounded-lg cursor-move';
+        li.dataset.index = i;
+        
+        const duration = track.duration ? Math.floor(track.duration / 60000) + ':' + String(Math.floor((track.duration % 60000) / 1000)).padStart(2, '0') : '';
+        
+        li.innerHTML = `
+          <div class="flex items-center space-x-4 flex-grow min-w-0">
+            <div class="flex-shrink-0">
+              ${track.preview_url ? 
+                `<button class="preview-button w-10 h-10 bg-red-600 hover:bg-red-500 rounded-full flex items-center justify-center transition-colors" data-index="${i}">
+                  <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z"/>
+                  </svg>
+                </button>` : 
+                `<div class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center">
+                  <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
+                  </svg>
+                </div>`
+              }
+            </div>
+            
+            <div class="w-14 h-14 rounded-lg overflow-hidden bg-red-800 flex-shrink-0 ${!track.image ? 'flex items-center justify-center' : ''}">
+              ${track.image ? 
+                `<img src="${track.image}" alt="${track.name}" class="w-full h-full object-cover">` :
+                `<svg class="w-6 h-6 text-red-400" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+                </svg>`
+              }
+            </div>
+            
+            <div class="flex-grow min-w-0">
+              <p class="font-semibold text-red-100 truncate text-lg">${track.name}</p>
+              <p class="text-red-300 text-sm truncate">${track.artist}</p>
+              <div class="flex items-center space-x-3 mt-1">
+                <p class="text-red-400 text-xs">Genres: ${genre}</p>
+                ${duration ? `<span class="text-red-500 text-xs">${duration}</span>` : ''}
+              </div>
+            </div>
+          </div>
+          
+          <button class="remove-track flex-shrink-0 w-10 h-10 bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white rounded-full flex items-center justify-center transition-all duration-200" data-index="${i}">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+            </svg>
+          </button>
+        `;
+        list.appendChild(li);
+      }
+
+      document.querySelectorAll('.remove-track').forEach(b => b.onclick = e => {
+        e.stopPropagation();
+        const i = +e.currentTarget.dataset.index;
+        currentTracks.splice(i, 1);
+        renderTracks();
+      });
+
+      if (sortable) sortable.destroy();
+      sortable = Sortable.create(list, {
+        animation: 200,
+        easing: 'cubic-bezier(1, 0, 0, 1)',
+        ghostClass: 'opacity-50',
+        chosenClass: 'bg-red-900/30',
+        onEnd: () => {
+          const newOrder = [...document.querySelectorAll('#trackList li')].map(li => currentTracks[+li.dataset.index]);
+          currentTracks = newOrder;
+          renderTracks();
+        }
+      });
+    }
+
+    async function saveReorder() {
+      if (!currentPlaylistId || currentTracks.length === 0) return alert('No tracks to save');
+      
+      const uris = currentTracks.map(t => t.uri);
+      const btn = document.getElementById('saveOrderBtn');
+      const originalText = btn.innerHTML;
+      
+      btn.innerHTML = `
+        <span class="flex items-center space-x-2">
+          <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+          <span>Saving...</span>
+        </span>
+      `;
+      btn.disabled = true;
+      
+      try {
+        await fetch(`https://api.spotify.com/v1/playlists/${currentPlaylistId}/tracks`, {
+          method: 'PUT',
+          headers: { 'Authorization': 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ uris: [] })
+        });
+        
+        for (let i = 0; i < uris.length; i += 100) {
+          await fetch(`https://api.spotify.com/v1/playlists/${currentPlaylistId}/tracks`, {
+            method: 'POST',
+            headers: { 'Authorization': 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ uris: uris.slice(i, i + 100) })
+          });
+        }
+        
+        btn.innerHTML = `
+          <span class="flex items-center space-x-2">
+            <svg class="w-5 h-5 text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span>Saved!</span>
+          </span>
+        `;
+        
+        btn.classList.add('animate-pulse');
+        setTimeout(() => {
+          btn.innerHTML = originalText;
+          btn.classList.remove('animate-pulse');
+        }, 2000);
+        
+      } catch (e) {
+        console.error(e);
+        alert(`Failed to save: ${e.message}`);
+        btn.innerHTML = originalText;
+      }
+      
+      btn.disabled = false;
+    }
+  </script>
+</body>
+</html>

@@ -1,7 +1,7 @@
 # Drew's Spotify Playlist Sorter  
 
 ## How to use
-1. Clone this repository and run `cd <project-directory>` to move into the project folder
+1. Clone this repository and run `cd <project-directory>/backend` to move into the project folder
 2. Make sure you have Node.js installed. You can check by running `node --version`
 3. Install dependencies by running `npm install express axios cors dotenv`
 4. Fill out the .env.example and rename it to .env

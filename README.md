@@ -33,7 +33,8 @@
 - Better sorting logic (drag & drop)
 - Song preview ability
 - "Now playing" view instead of "Music Curator"
-- Lower loading times for playlists 
+- Lower loading times for playlists
+- Batch song remove
 
 ## Issues
 Contact me via email in case of any issues. Make sure to include:

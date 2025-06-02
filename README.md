@@ -43,7 +43,7 @@ A web application for easily reordering your Spotify playlists with a sleek, mod
 -   `GET /api/genres` - Fetches genre information for a track from the Last.fm API.
 
 ## Potential Future Features
--   Custom App Logo (for browser tab and header).
+-   App Logo (for browser tab and header).
 -   **Undo/Redo Action**: For track removal or reordering (More Complex).
 -   **Playlist Analysis/Stats**: Display overall stats for a playlist (duration)
 -   **Persistent UI Preferences**: Remember user choices like sort order, compact view, etc.

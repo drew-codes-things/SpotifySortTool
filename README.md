@@ -49,6 +49,7 @@ A web application for easily reordering your Spotify playlists with a sleek, mod
 -   **Persistent UI Preferences**: Remember user choices like sort order, compact view, etc.
 -   **Lyrics Display**: (If a suitable API is found and integrated).
 -   **Account-related statistical information (most listened etc)**.
+-   **When you're not playing music, it will display the last played song**.
 
 ## Issues
 If you encounter any issues, please try to gather the following information before reaching out:

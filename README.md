@@ -1,4 +1,6 @@
-# Drew's Spotify Playlist Sorter  
+# Drew's Spotify Playlist Sorter
+
+A web application for easily reordering your Spotify playlists with a sleek, modern interface. It features drag-and-drop sorting, automatic genre tagging via Last.fm, and real-time saving to your Spotify account.
 
 ## How to use
 1. Clone this repository and run `cd <project-directory>/backend` to move into the project folder
@@ -10,35 +12,48 @@
 7. Click "Connect Spotify" to authenticate with your Spotify account
 
 ## Features
-- **Spotify Integration**: Full OAuth authentication with automatic token refresh
-- **Drag & Drop Sorting**: Intuitive playlist reordering with smooth animations
-- **Genre Tagging**: Automatic genre detection using Last.fm API
-- **Music Previews**: Play track previews directly in the browser
-- **Modern UI**: Glass-morphism design with red gradient theme and smooth animations
-- **Responsive Design**: Works seamlessly on desktop and mobile devices
-- **Real-time Updates**: Changes are saved directly to your Spotify playlists
-- **Track Management**: Remove unwanted tracks with a simple click
-- **Profile Integration**: Displays your Spotify profile and connection status
+-   **Spotify Integration**: Full OAuth2 authentication with automatic token refresh.
+-   **Playlist Loading**: Fetches and displays your Spotify playlists (excluding empty ones).
+-   **Persistent Last Viewed Playlist**: Remembers and reloads your last opened playlist.
+-   **Track Listing & Sorting**:
+    -   **Drag & Drop Reordering**: Intuitive reordering of tracks within a playlist.
+    -   **Random Shuffling**: Shuffle the current playlist locally.
+-   **Track Management**:
+    -   **Filter Tracks**: Filter tracks within a playlist by name or artist.
+    -   **Remove Individual Tracks**: Click the trash icon to remove a track.
+    -   **Batch Track Removal**: Select multiple tracks with checkboxes and remove them.
+    -   **Remove Duplicate Tracks**: Scan and remove duplicate tracks (based on URI) from the current playlist.
+-   **Saving Options**:
+    -   **Save Changes to Current Playlist**: Overwrite the current Spotify playlist with your new order.
+    -   **Save As New Playlist**: Save the sorted/modified track list as a new playlist in your Spotify account.
+-   **Track Information & Discovery**:
+    -   **Clickable Artist & Album Links**: Navigate directly to Spotify pages for artists and albums.
+    -   **Detailed Track Info Modal**: Click a track (not links/buttons) to see:
+        -   Album Art, Name, Release Date
+        -   Artist(s), Duration
+        -   Combined Genres (from Last.fm and Spotify album data)
+        -   Direct link to the track on Spotify.
+-   **Genre Tagging**: Automatic genre suggestion for tracks using the Last.fm API.
+-   **Spotify Playback Status**: Shows what you're currently playing on any of your Spotify devices in the profile section ("Now Playing (Spotify): ...").
 
-## API Endpoints
-- `GET /api/config` - Returns client configuration
-- `POST /api/token` - Exchanges authorization code for access token
-- `POST /api/refresh` - Refreshes expired access tokens
-- `GET /api/genres` - Fetches genre information from Last.fm
+## API Endpoints (Backend - `index.js`)
+-   `GET /api/config` - Returns client configuration (Spotify Client ID, Redirect URI, Last.fm API Key).
+-   `POST /api/token` - Exchanges Spotify authorization code for an access token.
+-   `POST /api/refresh` - Refreshes an expired Spotify access token.
+-   `GET /api/genres` - Fetches genre information for a track from the Last.fm API.
 
-# Features to come
-- Logo for the website TAB
-- Own logo for the header
-- Log out and log in functions in the top right
-- Better sorting logic (drag & drop)
-- Song preview ability
-- "Now playing" view instead of "Music Curator"
-- Lower loading times for playlists
-- Batch song remove
+## Potential Future Features
+-   Custom App Logo (for browser tab and header).
+-   **Undo/Redo Action**: For track removal or reordering (More Complex).
+-   **Playlist Analysis/Stats**: Display overall stats for a playlist (duration)
+-   **Persistent UI Preferences**: Remember user choices like sort order, compact view, etc.
+-   **Lyrics Display**: (If a suitable API is found and integrated).
+-   **Account-related statistical information (most listened etc)**.
 
 ## Issues
-Contact me via email in case of any issues. Make sure to include:
-- A screenshot of the problem (if applicable)
-- The playlist you were trying to sort
-- Browser console errors (press F12 → Console tab)
-- A brief but clear explanation of what went wrong
+If you encounter any issues, please try to gather the following information before reaching out:
+-   A screenshot or screen recording of the problem.
+-   The name of the playlist you were trying to sort/modify.
+-   Any errors shown in the browser's developer console (Press F12 → Console tab).
+-   A clear, step-by-step explanation of what you did and what went wrong.
+

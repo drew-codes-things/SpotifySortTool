@@ -1,6 +1,4 @@
-# Drew's Spotify Playlist Sorter
-
-A web application for easily reordering your Spotify playlists with a sleek, modern interface. It features drag-and-drop sorting, automatic genre tagging via Last.fm, and real-time saving to your Spotify account.
+# Drew's Spotify Tool
 
 ## How to use
 1. Clone this repository and run `cd <project-directory>/backend` to move into the project folder

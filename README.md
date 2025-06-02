@@ -54,7 +54,6 @@ A web application for easily reordering your Spotify playlists with a sleek, mod
 ## Issues
 If you encounter any issues, please try to gather the following information before reaching out:
 -   A screenshot or screen recording of the problem.
--   The name of the playlist you were trying to sort/modify.
 -   Any errors shown in the browser's developer console (Press F12 → Console tab).
 -   A clear, step-by-step explanation of what you did and what went wrong.
 

@@ -42,11 +42,10 @@
 
 ## Potential Future Features
 *   App Logo (for browser tab and header).
-*   **More Robust Undo/Redo Action**: For various actions beyond just track removal (e.g., reordering).
-*   **Enhanced Playlist Analysis/Stats**: Display more detailed stats for a playlist (e.g., genre breakdown, average release year).
+*   **More Robust Undo/Redo Action**: For various actions beyond just track removal (e.g., Bulk actions reversal).
+*   **Enhanced Playlist Analysis/Stats**: Display more detailed stats for a playlist (release year).
 *   **Persistent UI Preferences**: Remember user choices like sort order preferences across sessions.
-*   **Lyrics Display**: (If a suitable API is found and integrated).
-*   **Account-related statistical information** (e.g., most sorted genres, activity log).
+*   **Adding songs between playlists singularly and in bulk**
 
 ## Issues
 If you encounter any issues, please try to gather the following information before reaching out:
